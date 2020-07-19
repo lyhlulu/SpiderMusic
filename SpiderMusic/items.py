@@ -10,6 +10,7 @@ class SpidermusicItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     # 歌曲id
+    table_name = 'spider_music'
     id = scrapy.Field()
     artist = scrapy.Field()
     album = scrapy.Field()

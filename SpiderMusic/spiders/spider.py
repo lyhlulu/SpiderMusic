@@ -1,5 +1,6 @@
 import json
 from scrapy import Spider, Request, FormRequest
+from ..items import SpidermusicItem
 
 
 # from scrapy.cmdline import execute
@@ -94,4 +95,30 @@ class MusicSpider(Spider):
 
     # 获取评论
     def parse_comment(self, response):
-        print(response.text)
+        id = response.meta['id']
+        music = response.meta['music']
+        artist = response.meta['artist']
+        album = response.meta['album']
+        result = json.loads(response.text)
+        comments = []
+        if 'hotComments' in result.keys():
+            for comment in result.get('hotComments'):
+                hotcomment_author = comment['user']['nickname']
+                hotcomment = comment['content']
+                hotcomment_like = comment['likedCount']
+                hotcomment_avatar = comment['user']['avatarUrl']
+                data = {
+                    'nickname': hotcomment_author,
+                    'content': hotcomment,
+                    'likedcount': hotcomment_like,
+                    'avatarurl': hotcomment_avatar
+                }
+                comments.append(data)
+        item = SpidermusicItem()
+        for field in item.fields:
+            try:
+                item[field] = eval(field)
+            except:
+                print('Field is not defined', field)
+        yield item
+
